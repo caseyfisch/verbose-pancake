@@ -33,7 +33,7 @@ private class Target {
   }
 }
 
-int trialCount = 5; //this will be set higher for the bakeoff
+int trialCount = 10; //this will be set higher for the bakeoff
 int trialIndex = 0;
 ArrayList<Target> targets = new ArrayList<Target>();
 
@@ -138,15 +138,14 @@ void drawActions() {
   int diam = width / 4;
   
   if (num0s == 0) {
-    fill(255);
+    fill(65);
     ellipse(width / 2 - diam, height / 2, diam, diam); 
     ellipse(width / 2 + diam, height / 2, diam, diam); 
   } else if (num0s == 1) {
     fill(#C4FF58);
     ellipse(width / 2 - diam, height / 2, diam, diam); 
-    fill(255);
+    fill(65);
     ellipse(width / 2 + diam, height / 2, diam, diam); 
-    
   } else if (num0s == 2) {
     fill(#C4FF58);
     ellipse(width / 2 - diam, height / 2, diam, diam); 
@@ -157,7 +156,7 @@ void drawActions() {
 
 void draw() {
   background(0);
-  
+    
   if (startTime == 0) {
     startTime = millis();
   }
@@ -175,6 +174,12 @@ void draw() {
     text("User took " + nfc((finishTime-startTime)/1000f/trialCount, 3) + " sec per target", 10, 80);
     return;
   }
+  
+  textSize(18);
+  fill(255);
+  textAlign(RIGHT);
+  text("Trial " + (trialIndex + 1), width - 10, 20);
+  textSize(60);
   
   countDownTimerWait -= 1;
   
@@ -229,7 +234,7 @@ void draw() {
     drawActions();
     int act = targets.get(trialIndex).action;
     
-    if (timeCount >= 90) {
+    if (timeCount >= 75) {
       startClock = false;
       
       if (sequence.size() <= 2) {
