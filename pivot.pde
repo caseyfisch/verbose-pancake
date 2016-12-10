@@ -20,6 +20,9 @@ boolean onFirstPhase, onSecondPhase;
 boolean printed;
 int countDownTimerWait = 0;
 
+boolean showX, showCheck;
+int showXCount = 0, showCheckCount = 0;
+
 
 private class Target {
   int target = 0;
@@ -125,8 +128,10 @@ void drawActions() {
   int act = targets.get(trialIndex).action;
   textAlign(CENTER);
   if (act == 0) {
+    if (num0s == 1) fill(#C4FF58);
     text("Fill 1 circle", width / 2, 60); 
   } else {
+    if (num0s == 2) fill(#C4FF58);
     text("Fill 2 circles", width / 2, 60); 
   }
   noStroke();
@@ -161,6 +166,26 @@ void draw() {
   
   if (startClock) {
     timeCount += 1; 
+  }
+  
+  if (showCheck) {
+    showCheckCount += 1;
+    textAlign(CENTER);
+    fill(255);
+    text("Good!", width / 2, height / 4);
+    if (showCheckCount > 20) {
+      showCheck = false; 
+      showCheckCount = 0;
+    }
+  } else if (showX) {
+    showXCount += 1;
+    textAlign(CENTER);
+    fill(255);
+    text("Wrong :(", width / 2, height / 4);
+    if (showXCount > 20) {
+      showX = false; 
+      showXCount = 0;
+    }
   }
   
   int tar = targets.get(trialIndex).target;
@@ -245,56 +270,59 @@ class AccelerometerListener implements SensorEventListener {
     if (onFirstPhase && countDownTimerWait < 0 && !userDone) {
       int tar = targets.get(trialIndex).target;
       
-      if (-2 <= ax && ax <= 2) {
-        if (az >= 7) { // back
-          tiltLeft = false;
-          tiltRight = false;
-          tiltBack = true;
-          tiltForward = false;
-          
-          if (tar == 0) {
-            nextPhase();
-          } else {
-            wrongAction("Wrong 1st round action");
-          }
-          
-        } else if (az <= 0) { // forward
-          tiltLeft = false;
-          tiltRight = false;
-          tiltBack = false;
-          tiltForward = true;   
-          
-          if (tar == 1) {
-            nextPhase();
-          } else {
-            wrongAction("Wrong 1st round action");
-          }   
+      if (-2 <= ax && ax <= 2 && 0 <= ay && ay <= 4 && az >= 7) {
+        // Back...
+        println("Back");
+        tiltLeft = false;
+        tiltRight = false;
+        tiltBack = true;
+        tiltForward = false;
+        
+        if (tar == 0) {
+          nextPhase();
+        } else {
+          wrongAction("Wrong 1st round action");
         }
-      } else if (-2 <= az && az <= 2) {
-        if (ax <= -7) { // right
-          tiltLeft = false;
-          tiltRight = true;
-          tiltBack = false;
-          tiltForward = false;
           
-          if (tar == 2) {
-            nextPhase();
-          } else {
-            wrongAction("Wrong 1st round action");
-          }     
+      } else if (-2 <= ax && ax <= 2 && 0 <= ay && ay <= 4 && az <= 0) { 
+        // Forward...
+        println("Forward");
+        tiltLeft = false;
+        tiltRight = false;
+        tiltBack = false;
+        tiltForward = true;   
           
-        } else if (ax >= 7) { // left
-          tiltLeft = true;
-          tiltRight = false;
-          tiltBack = false;
-          tiltForward = false;
+        if (tar == 1) {
+          nextPhase();
+        } else {
+          wrongAction("Wrong 1st round action");
+        }   
+      } else if (-2 <= az && az <= 2 && 3 <= ay && ay <= 8  && ax <= -7) {
+        // Right...
+        println("Right");
+        tiltLeft = false;
+        tiltRight = true;
+        tiltBack = false;
+        tiltForward = false;
+        
+        if (tar == 2) {
+          nextPhase();
+        } else {
+          wrongAction("Wrong 1st round action");
+        }     
           
-          if (tar == 3) {
-            nextPhase();
-          } else {
-            wrongAction("Wrong 1st round action");
-          }
+      } else if (-2 <= az && az <= 2 && 3 <= ay && ay <= 8  && ax >= 7) { 
+        // left
+        println("Left");
+        tiltLeft = true;
+        tiltRight = false;
+        tiltBack = false;
+        tiltForward = false;
           
+        if (tar == 3) {
+          nextPhase();
+        } else {
+          wrongAction("Wrong 1st round action");
         }
       } else { // nothing
         tiltLeft = false;
@@ -358,10 +386,16 @@ void nextPhase() {
   onFirstPhase = !onFirstPhase;
   onSecondPhase = !onSecondPhase;
   printed = false;
+  showCheck = true;
+  showX = false;
+  
 }
 
 void wrongAction(String error) {
   println(error);
+  showX = true;
+  showCheck = false;
+  
   if (trialIndex > 0) {
     trialIndex -= 1;
   }
