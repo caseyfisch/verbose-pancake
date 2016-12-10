@@ -56,6 +56,7 @@ void setup() {
   manager.registerListener(proxListener, proximitySensor, SensorManager.SENSOR_DELAY_FASTEST);
   
   textFont(createFont("Arial", 60));
+  textAlign(CENTER);
   
   // Generate targets.
   for (int i=0; i<trialCount; i++) {  //don't change this!
@@ -73,20 +74,49 @@ void setup() {
   printed = false;
 }
 
+void drawTargets() {
+  fill(#75FCC5);
+  text("Tilt Back", width / 2, 10);
+  strokeWeight(8);
+  stroke(#75FCC5);
+  line(width / 2, 70, width / 2, 150);
+  
+  fill(#FF5ADC);
+  text("Tilt Left", 10, height / 2 - 60);
+  stroke(#FF5ADC);
+  line(10, height / 2, 90, height / 2);  
+  
+  fill(#FFA25A);
+  text("Tilt Right", width - 10, height / 2);
+  stroke(#FFA25A);
+  line(width / 2, 70, width / 2, 150);  
+  
+  fill(#71D8FF);
+  text("Tilt Forward", width / 2, height - 10);
+  stroke(#71D8FF);
+  line(width / 2, 70, width / 2, 150);  
+  
+}
+
 void draw() {
   background(0);
   if (trialIndex >= targets.size()) return;
   countDownTimerWait -= 1;
   
-  
-  if (countDownTimerWait < 0) {
-    text("X: " + ax, 10, 60);
-    text("Y: " + ay, 10, 120);
-    text("Z: " + az, 10, 180);
+  if (startClock) {
+    timeCount += 1; 
   }
+  
+  //if (countDownTimerWait < 0) {
+  //  text("X: " + ax, 10, 60);
+  //  text("Y: " + ay, 10, 120);
+  //  text("Z: " + az, 10, 180);
+  //}
   
   int tar = targets.get(trialIndex).target;
   int act = targets.get(trialIndex).action;
+  
+  drawTargets();
   if (onFirstPhase) {
     if (tar == 0) {
       text("BACK", 10, 240);
@@ -101,6 +131,18 @@ void draw() {
     if (!printed) {
       println("Starting Trial " + trialIndex + ", Phase 2"); 
       printed = true;
+    }
+    
+    if (timeCount >= 60 && sequence.size() <= 2) {
+      println("did nothing in 1 s");
+      timeCount = 0;
+      startClock = false;
+      sequence.clear();
+    } else if (timeCount < 60 && sequence.size() >= 4) {
+      println("added 1 in 1 s"); 
+      timeCount = 0;
+      startClock = false;
+      sequence.clear();
     }
   }
   
@@ -180,10 +222,39 @@ class AccelerometerListener implements SensorEventListener {
   }
 }
 
+boolean startClock = false;
+int timeCount = 0;
+
+ArrayList<EventInfo> sequence = new ArrayList<EventInfo>();
+class EventInfo {
+  float dist;
+  float time;
+}
+
 class ProximitySensorListener implements SensorEventListener {
   public void onSensorChanged(SensorEvent event) {
     if (onSecondPhase) {
-      println(event.values[0]);
+      float distance = event.values[0];
+      println("Dist: " + distance);
+      
+      println("Adding event");
+      EventInfo i = new EventInfo();
+      i.time = event.timestamp;
+      i.dist = event.values[0];
+      sequence.add(i);
+      
+      println("Sequence!");
+      for (EventInfo e : sequence) {
+        println(e.dist); 
+      }
+      println("done");
+      
+      if (sequence.size() == 2) {
+        startClock = true;
+      }
+      
+      
+     
     }
   }
   
