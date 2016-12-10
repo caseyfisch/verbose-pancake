@@ -20,6 +20,7 @@ boolean onFirstPhase, onSecondPhase;
 boolean printed;
 int countDownTimerWait = 0;
 
+
 private class Target {
   int target = 0;
   int action = 0;
@@ -74,58 +75,130 @@ void setup() {
   printed = false;
 }
 
+void drawArrow(int cx, int cy, int len, float angle){
+  pushMatrix();
+  translate(cx, cy);
+  rotate(radians(angle));
+  line(0,0,len, 0);
+  line(len, 0, len - 8, -8);
+  line(len, 0, len - 8, 8);
+  popMatrix();
+}
+
 void drawTargets() {
-  fill(#75FCC5);
-  text("Tilt Back", width / 2, 10);
+  
   strokeWeight(8);
-  stroke(#75FCC5);
-  line(width / 2, 70, width / 2, 150);
   
-  fill(#FF5ADC);
-  text("Tilt Left", 10, height / 2 - 60);
-  stroke(#FF5ADC);
-  line(10, height / 2, 90, height / 2);  
+  fill(65);
+  textAlign(CENTER);
+  text("Tilt Away", width / 2, 60);
+  stroke(65);
+  drawArrow(width / 2, height / 2 - height / 6, width / 4, 270);
   
-  fill(#FFA25A);
-  text("Tilt Right", width - 10, height / 2);
-  stroke(#FFA25A);
-  line(width / 2, 70, width / 2, 150);  
   
-  fill(#71D8FF);
-  text("Tilt Forward", width / 2, height - 10);
-  stroke(#71D8FF);
-  line(width / 2, 70, width / 2, 150);  
+  fill(65);
+  textAlign(LEFT);
+  text("Tilt", 10, height / 2 - 30);
+  text("Left", 10, height / 2 + 60);
+  stroke(65);
+  drawArrow(width / 2 - 50, height / 2, width / 4, 180);
+  
+  
+  fill(65);
+  textAlign(RIGHT);
+  text("Tilt", width - 10, height / 2 - 30);
+  text("Right", width - 10, height / 2 + 60);
+  stroke(65);
+  drawArrow(width / 2 + 50, height / 2, width / 4, 0);
+
+  fill(65);
+  textAlign(CENTER);
+  text("Tilt Towards", width / 2, height - 30);
+  stroke(65);
+  drawArrow(width / 2, height / 2 + height / 6, width / 4, 90);
+  
+  noStroke();
+  textAlign(LEFT);
+}
+
+void drawActions() {
+  int act = targets.get(trialIndex).action;
+  textAlign(CENTER);
+  if (act == 0) {
+    text("Fill 1 circle", width / 2, 60); 
+  } else {
+    text("Fill 2 circles", width / 2, 60); 
+  }
+  noStroke();
+  int diam = width / 4;
+  
+  if (num0s == 0) {
+    fill(255);
+    ellipse(width / 2 - diam, height / 2, diam, diam); 
+    ellipse(width / 2 + diam, height / 2, diam, diam); 
+  } else if (num0s == 1) {
+    fill(#C4FF58);
+    ellipse(width / 2 - diam, height / 2, diam, diam); 
+    fill(255);
+    ellipse(width / 2 + diam, height / 2, diam, diam); 
+    
+  } else if (num0s == 2) {
+    fill(#C4FF58);
+    ellipse(width / 2 - diam, height / 2, diam, diam); 
+    ellipse(width / 2 + diam, height / 2, diam, diam);        
+  }
   
 }
 
 void draw() {
   background(0);
-  if (trialIndex >= targets.size()) return;
+  if (trialIndex >= targets.size()) {
+    userDone = true;
+    return;
+  }
+  
   countDownTimerWait -= 1;
   
   if (startClock) {
     timeCount += 1; 
   }
   
-  //if (countDownTimerWait < 0) {
-  //  text("X: " + ax, 10, 60);
-  //  text("Y: " + ay, 10, 120);
-  //  text("Z: " + az, 10, 180);
-  //}
-  
   int tar = targets.get(trialIndex).target;
-  int act = targets.get(trialIndex).action;
   
-  drawTargets();
   if (onFirstPhase) {
+    drawTargets();
+    
     if (tar == 0) {
-      text("BACK", 10, 240);
+      //text("BACK", 10, 240);
+      fill(#75FCC5);
+      textAlign(CENTER);
+      text("Tilt Away", width / 2, 60);
+      stroke(#75FCC5);
+      drawArrow(width / 2, height / 2 - height / 6, width / 4, 270);
+      
     } else if (tar == 1) {
-      text("FRONT", 10, 240);
+      //text("FRONT", 10, 240);
+      fill(#71D8FF);
+      textAlign(CENTER);
+      text("Tilt Towards", width / 2, height - 30);
+      stroke(#71D8FF);
+      drawArrow(width / 2, height / 2 + height / 6, width / 4, 90);
     } else if (tar == 2) {
-      text("RIGHT", 10, 240);
+      //text("RIGHT", 10, 240);
+      fill(#FFA25A);
+      textAlign(RIGHT);
+      text("Tilt", width - 10, height / 2 - 30);
+      text("Right", width - 10, height / 2 + 60);
+      stroke(#FFA25A);
+      drawArrow(width / 2 + 50, height / 2, width / 4, 0);
     } else if (tar == 3) {
-      text("LEFT", 10, 240);
+      //text("LEFT", 10, 240);
+      fill(#FF5ADC);
+      textAlign(LEFT);
+      text("Tilt", 10, height / 2 - 30);
+      text("Left", 10, height / 2 + 60);
+      stroke(#FF5ADC);
+      drawArrow(width / 2 - 50, height / 2, width / 4, 180);
     }
   } else if (onSecondPhase) {
     if (!printed) {
@@ -133,19 +206,33 @@ void draw() {
       printed = true;
     }
     
-    if (timeCount >= 60 && sequence.size() <= 2) {
-      println("did nothing in 1 s");
-      timeCount = 0;
+    drawActions();
+    int act = targets.get(trialIndex).action;
+    
+    if (timeCount >= 90) {
       startClock = false;
+      
+      if (sequence.size() <= 2) {
+        if (act == 0) {
+          nextPhase();
+          trialIndex++;
+        } else {
+          wrongAction("Wrong 2nd round action"); 
+        }
+      } else if (sequence.size() >= 3) {
+        if (act == 1) {
+          nextPhase();
+          trialIndex++;
+        } else {
+          wrongAction("Wrong 2nd round action"); 
+        }
+      }
+      
       sequence.clear();
-    } else if (timeCount < 60 && sequence.size() >= 4) {
-      println("added 1 in 1 s"); 
+      num0s = 0;
       timeCount = 0;
-      startClock = false;
-      sequence.clear();
     }
   }
-  
 }
 
 class AccelerometerListener implements SensorEventListener {
@@ -153,12 +240,13 @@ class AccelerometerListener implements SensorEventListener {
     ax = event.values[0];
     ay = event.values[1];
     az = event.values[2];
+    if (trialIndex >= trialCount) return;
     
-    if (onFirstPhase && countDownTimerWait < 0) {
+    if (onFirstPhase && countDownTimerWait < 0 && !userDone) {
       int tar = targets.get(trialIndex).target;
       
       if (-2 <= ax && ax <= 2) {
-        if (az >= 8) { // back
+        if (az >= 7) { // back
           tiltLeft = false;
           tiltRight = false;
           tiltBack = true;
@@ -170,7 +258,7 @@ class AccelerometerListener implements SensorEventListener {
             wrongAction("Wrong 1st round action");
           }
           
-        } else if (az <= -2) { // forward
+        } else if (az <= 0) { // forward
           tiltLeft = false;
           tiltRight = false;
           tiltBack = false;
@@ -231,30 +319,33 @@ class EventInfo {
   float time;
 }
 
+
+int num0s = 0;
+
 class ProximitySensorListener implements SensorEventListener {
   public void onSensorChanged(SensorEvent event) {
-    if (onSecondPhase) {
+    if (trialIndex >= trialCount) return;
+    
+    if (onSecondPhase && !userDone) {
       float distance = event.values[0];
       println("Dist: " + distance);
       
-      println("Adding event");
       EventInfo i = new EventInfo();
       i.time = event.timestamp;
       i.dist = event.values[0];
       sequence.add(i);
       
-      println("Sequence!");
+      if (i.dist == 0) {
+        num0s += 1; 
+      }
+      
       for (EventInfo e : sequence) {
         println(e.dist); 
-      }
-      println("done");
+      }      
       
-      if (sequence.size() == 2) {
+      if (sequence.size() > 0) {
         startClock = true;
       }
-      
-      
-     
     }
   }
   
@@ -263,7 +354,7 @@ class ProximitySensorListener implements SensorEventListener {
   }
 }
 
-void nextPhase() {
+void nextPhase() {  
   onFirstPhase = !onFirstPhase;
   onSecondPhase = !onSecondPhase;
   printed = false;
