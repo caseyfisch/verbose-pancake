@@ -157,8 +157,22 @@ void drawActions() {
 
 void draw() {
   background(0);
-  if (trialIndex >= targets.size()) {
+  
+  if (startTime == 0) {
+    startTime = millis();
+  }
+  
+  if (trialIndex >= targets.size() && !userDone) {
     userDone = true;
+    finishTime = millis();
+  }
+  
+  if (userDone) {
+    textSize(24);
+    textAlign(LEFT);
+    fill(255);
+    text("User completed " + trialCount + " trials", 10, 50);
+    text("User took " + nfc((finishTime-startTime)/1000f/trialCount, 3) + " sec per target", 10, 80);
     return;
   }
   
@@ -168,25 +182,6 @@ void draw() {
     timeCount += 1; 
   }
   
-  if (showCheck) {
-    showCheckCount += 1;
-    textAlign(CENTER);
-    fill(255);
-    text("Good!", width / 2, height / 4);
-    if (showCheckCount > 20) {
-      showCheck = false; 
-      showCheckCount = 0;
-    }
-  } else if (showX) {
-    showXCount += 1;
-    textAlign(CENTER);
-    fill(255);
-    text("Wrong :(", width / 2, height / 4);
-    if (showXCount > 20) {
-      showX = false; 
-      showXCount = 0;
-    }
-  }
   
   int tar = targets.get(trialIndex).target;
   
@@ -258,6 +253,27 @@ void draw() {
       timeCount = 0;
     }
   }
+  
+  if (showCheck) {
+    showCheckCount += 1;
+    textAlign(CENTER);
+    fill(255);
+    text("Good!", width / 2, height / 4);
+    if (showCheckCount > 20) {
+      showCheck = false; 
+      showCheckCount = 0;
+    }
+  } else if (showX) {
+    showXCount += 1;
+    textAlign(CENTER);
+    fill(255);
+    text("Wrong :(", width / 2, height / 4);
+    if (showXCount > 20) {
+      showX = false; 
+      showXCount = 0;
+    }
+  }
+  
 }
 
 class AccelerometerListener implements SensorEventListener {
@@ -284,7 +300,7 @@ class AccelerometerListener implements SensorEventListener {
           wrongAction("Wrong 1st round action");
         }
           
-      } else if (-2 <= ax && ax <= 2 && 0 <= ay && ay <= 4 && az <= 0) { 
+      } else if (-1 <= ax && ax <= 1 && 8 <= ay && ay <= 9 && az <= 0) { 
         // Forward...
         println("Forward");
         tiltLeft = false;
@@ -365,11 +381,7 @@ class ProximitySensorListener implements SensorEventListener {
       
       if (i.dist == 0) {
         num0s += 1; 
-      }
-      
-      for (EventInfo e : sequence) {
-        println(e.dist); 
-      }      
+      }   
       
       if (sequence.size() > 0) {
         startClock = true;
