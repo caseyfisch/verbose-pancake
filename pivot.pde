@@ -76,6 +76,9 @@ void setup() {
   onFirstPhase = true;
   onSecondPhase = false;
   printed = false;
+  
+  ballX = width / 2;
+  ballY = height / 2;
 }
 
 void drawArrow(int cx, int cy, int len, float angle){
@@ -86,6 +89,98 @@ void drawArrow(int cx, int cy, int len, float angle){
   line(len, 0, len - 8, -8);
   line(len, 0, len - 8, 8);
   popMatrix();
+}
+
+int ballX, ballY;
+
+void drawBall() {
+  ballX += (-1 * ax) * 8;
+  ballY += ay * 8;
+  
+  ballX = constrain(ballX, 0, width);
+  ballY = constrain(ballY, 0, height);
+  
+  fill(255);
+  noStroke();
+  ellipse(ballX, ballY, 50, 50);
+  
+  int tar = targets.get(trialIndex).target;
+  
+  println(ballX + ", " + ballY);
+  
+  if (ballX <= 25) {
+    // on Left
+    // tar = 3
+    tiltLeft = true;
+    tiltRight = false;
+    tiltBack = false;
+    tiltForward = false;
+    
+    println("Left");
+      
+    if (tar == 3) {
+      nextPhase();
+    } else {
+      wrongAction("Wrong 1st round action");
+    }
+    
+  } 
+  if (ballX >= width - 25) {
+    // on Right
+    // tar = 2
+    
+    tiltLeft = false;
+    tiltRight = true;
+    tiltBack = false;
+    tiltForward = false;
+    
+    println("Right");
+    
+    if (tar == 2) {
+      nextPhase();
+    } else {
+      wrongAction("Wrong 1st round action");
+    }
+    
+  } 
+  
+  if (ballY <= 25) {
+    // on Top
+    // tar = 0
+    
+    tiltLeft = false;
+    tiltRight = false;
+    tiltBack = true;
+    tiltForward = false;
+    
+    println("Top");
+    
+    if (tar == 0) {
+      nextPhase();
+    } else {
+      wrongAction("Wrong 1st round action");
+    }
+    
+  } 
+  
+  if (ballY >= height - 25) {
+    // on Bottom
+    // tar = 1
+    
+    tiltLeft = false;
+    tiltRight = false;
+    tiltBack = false;
+    tiltForward = true;   
+      
+    println("Bottom");  
+      
+    if (tar == 1) {
+      nextPhase();
+    } else {
+      wrongAction("Wrong 1st round action");
+    }   
+    
+  }
 }
 
 void drawTargets() {
@@ -122,6 +217,8 @@ void drawTargets() {
   
   noStroke();
   textAlign(LEFT);
+  
+  drawBall();
 }
 
 void drawActions() {
@@ -288,70 +385,70 @@ class AccelerometerListener implements SensorEventListener {
     az = event.values[2];
     if (trialIndex >= trialCount) return;
     
-    if (onFirstPhase && countDownTimerWait < 0 && !userDone) {
-      int tar = targets.get(trialIndex).target;
+    //if (onFirstPhase && countDownTimerWait < 0 && !userDone) {
+    //  int tar = targets.get(trialIndex).target;
       
-      if (-2 <= ax && ax <= 2 && 0 <= ay && ay <= 4 && az >= 7) {
-        // Back...
-        println("Back");
-        tiltLeft = false;
-        tiltRight = false;
-        tiltBack = true;
-        tiltForward = false;
+    //  if (-2 <= ax && ax <= 2 && 0 <= ay && ay <= 4 && az >= 7) {
+    //    // Back...
+    //    println("Back");
+    //    tiltLeft = false;
+    //    tiltRight = false;
+    //    tiltBack = true;
+    //    tiltForward = false;
         
-        if (tar == 0) {
-          nextPhase();
-        } else {
-          wrongAction("Wrong 1st round action");
-        }
+    //    if (tar == 0) {
+    //      nextPhase();
+    //    } else {
+    //      wrongAction("Wrong 1st round action");
+    //    }
           
-      } else if (-1 <= ax && ax <= 1 && 8 <= ay && ay <= 9 && az <= 0) { 
-        // Forward...
-        println("Forward");
-        tiltLeft = false;
-        tiltRight = false;
-        tiltBack = false;
-        tiltForward = true;   
+    //  } else if (-1 <= ax && ax <= 1 && 8 <= ay && ay <= 9 && az <= 0) { 
+    //    // Forward...
+    //    println("Forward");
+    //    tiltLeft = false;
+    //    tiltRight = false;
+    //    tiltBack = false;
+    //    tiltForward = true;   
           
-        if (tar == 1) {
-          nextPhase();
-        } else {
-          wrongAction("Wrong 1st round action");
-        }   
-      } else if (-2 <= az && az <= 2 && 3 <= ay && ay <= 8  && ax <= -7) {
-        // Right...
-        println("Right");
-        tiltLeft = false;
-        tiltRight = true;
-        tiltBack = false;
-        tiltForward = false;
+    //    if (tar == 1) {
+    //      nextPhase();
+    //    } else {
+    //      wrongAction("Wrong 1st round action");
+    //    }   
+    //  } else if (-2 <= az && az <= 2 && 3 <= ay && ay <= 8  && ax <= -7) {
+    //    // Right...
+    //    println("Right");
+    //    tiltLeft = false;
+    //    tiltRight = true;
+    //    tiltBack = false;
+    //    tiltForward = false;
         
-        if (tar == 2) {
-          nextPhase();
-        } else {
-          wrongAction("Wrong 1st round action");
-        }     
+    //    if (tar == 2) {
+    //      nextPhase();
+    //    } else {
+    //      wrongAction("Wrong 1st round action");
+    //    }     
           
-      } else if (-2 <= az && az <= 2 && 3 <= ay && ay <= 8  && ax >= 7) { 
-        // left
-        println("Left");
-        tiltLeft = true;
-        tiltRight = false;
-        tiltBack = false;
-        tiltForward = false;
+    //  } else if (-2 <= az && az <= 2 && 3 <= ay && ay <= 8  && ax >= 7) { 
+    //    // left
+    //    println("Left");
+    //    tiltLeft = true;
+    //    tiltRight = false;
+    //    tiltBack = false;
+    //    tiltForward = false;
           
-        if (tar == 3) {
-          nextPhase();
-        } else {
-          wrongAction("Wrong 1st round action");
-        }
-      } else { // nothing
-        tiltLeft = false;
-        tiltRight = false;
-        tiltBack = false;
-        tiltForward = false;
-      }
-    }
+    //    if (tar == 3) {
+    //      nextPhase();
+    //    } else {
+    //      wrongAction("Wrong 1st round action");
+    //    }
+    //  } else { // nothing
+    //    tiltLeft = false;
+    //    tiltRight = false;
+    //    tiltBack = false;
+    //    tiltForward = false;
+    //  }
+    //}
   }
   
   public void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -405,7 +502,8 @@ void nextPhase() {
   printed = false;
   showCheck = true;
   showX = false;
-  
+  ballX = width / 2;
+  ballY = height / 2;
 }
 
 void wrongAction(String error) {
