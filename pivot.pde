@@ -17,6 +17,7 @@ float ax, ay, az;
 
 // Variables to manage phases
 boolean onFirstPhase, onSecondPhase;
+boolean correctFirstPhase, correctSecondPhase;
 boolean printed;
 int countDownTimerWait = 0;
 
@@ -37,6 +38,7 @@ private class Target {
 int trialCount = 10; //this will be set higher for the bakeoff
 int trialIndex = 0;
 ArrayList<Target> targets = new ArrayList<Target>();
+ArrayList<String> keywords = new ArrayList<String>();
 
 int startTime = 0; // time starts when the first click is captured
 int finishTime = 0; //records the time of the final click
@@ -81,6 +83,11 @@ void setup() {
   
   ballX = width / 2;
   ballY = height / 2;
+  
+  keywords.add("UP");
+  keywords.add("DOWN");
+  keywords.add("RIGHT");
+  keywords.add("LEFT");
 }
 
 void drawArrow(int cx, int cy, int len, float angle){
@@ -126,13 +133,17 @@ void drawBall() {
     println("Left");
       
     if (tar == 3) {
-      nextPhase();
+      correctFirstPhase = true;
+      correctSecondPhase = false;
     } else {
-      wrongAction("Wrong 1st round action");
+      correctFirstPhase = false;
+      correctSecondPhase = false;
+      //wrongAction("Wrong 1st round action");
     }
     
-  } 
-  if (ballX >= width - 25) {
+    nextPhase();
+    
+  } else if (ballX >= width - 25) {
     // on Right
     // tar = 2
     
@@ -144,14 +155,15 @@ void drawBall() {
     println("Right");
     
     if (tar == 2) {
-      nextPhase();
+      correctFirstPhase = true;
+      correctSecondPhase = false;
     } else {
-      wrongAction("Wrong 1st round action");
+      correctFirstPhase = false;
+      correctSecondPhase = false;
     }
+    nextPhase();
     
-  } 
-  
-  if (ballY <= 25) {
+  } else if (ballY <= 25) {
     // on Top
     // tar = 0
     
@@ -163,10 +175,14 @@ void drawBall() {
     println("Top");
     
     if (tar == 0) {
-      nextPhase();
+      correctFirstPhase = true;
+      correctSecondPhase = false;
     } else {
-      wrongAction("Wrong 1st round action");
+      correctFirstPhase = false;
+      correctSecondPhase = false;
+      //wrongAction("Wrong 1st round action");
     }
+    nextPhase();
     
   } 
   
@@ -182,10 +198,14 @@ void drawBall() {
     println("Bottom");  
       
     if (tar == 1) {
-      nextPhase();
+      correctFirstPhase = true;
+      correctSecondPhase = false;
     } else {
-      wrongAction("Wrong 1st round action");
+      correctFirstPhase = false;
+      correctSecondPhase = false;
+      //wrongAction("Wrong 1st round action");
     }   
+    nextPhase();
     
   }
 }
@@ -294,6 +314,7 @@ void draw() {
   fill(255);
   textAlign(RIGHT);
   text("Trial " + (trialIndex + 1), width - 10, 20);
+  text(keywords.get(targets.get(trialIndex).target) + "." + (targets.get(trialIndex).action + 1), width - 10, 40);
   textSize(60);
   
   countDownTimerWait -= 1;
@@ -354,17 +375,25 @@ void draw() {
       
       if (sequence.size() <= 2) {
         if (act == 0) {
+          println("1 swipe yes");
+          correctSecondPhase = true;
           nextPhase();
-          trialIndex++;
+          //trialIndex++;
         } else {
-          wrongAction("Wrong 2nd round action"); 
+          println("1 swipe bad");
+          correctSecondPhase = false;
+          //wrongAction("Wrong 2nd round action"); 
         }
       } else if (sequence.size() >= 3) {
         if (act == 1) {
+          println("2 swipe yes");
           nextPhase();
-          trialIndex++;
+          //trialIndex++;
+          correctSecondPhase = true;
         } else {
-          wrongAction("Wrong 2nd round action"); 
+          println("2 swipe bad");
+          correctSecondPhase = false;
+          //wrongAction("Wrong 2nd round action"); 
         }
       }
       
@@ -449,34 +478,63 @@ class ProximitySensorListener implements SensorEventListener {
 }
 
 void nextPhase() {  
+  if (onFirstPhase) {
+    onSecondPhase = true;
+    onFirstPhase = false;
+    printed = false;
+    showCheck = false;
+    showX = false;
+    return;
+  }
+  
+  println("correct 1st: " + correctFirstPhase + ", correct 2nd: " + correctSecondPhase);
+  
+  if (!onFirstPhase && onSecondPhase && correctFirstPhase && correctSecondPhase) {
+    // success
+    showCheck = true;
+    showX = false;
+    trialIndex++;
+    
+  } else {
+    showX = true;
+    showCheck = false;
+    
+    if (trialIndex > 0) {
+      trialIndex -= 1;
+    }
+    
+    countDownTimerWait = 30;
+
+  }
+  
+  ballX = width / 2;
+  ballY = height / 2;
+  correctFirstPhase = false;
+  correctSecondPhase = false;
   onFirstPhase = !onFirstPhase;
   onSecondPhase = !onSecondPhase;
   printed = false;
-  showCheck = true;
-  showX = false;
-  ballX = width / 2;
-  ballY = height / 2;
 }
 
-void wrongAction(String error) {
-  println(error);
-  showX = true;
-  showCheck = false;
+//void wrongAction(String error) {
+//  println(error);
+//  showX = true;
+//  showCheck = false;
   
-  if (trialIndex > 0) {
-    trialIndex -= 1;
-  }
+//  if (trialIndex > 0) {
+//    trialIndex -= 1;
+//  }
   
-  if (onSecondPhase) {
-    onSecondPhase = false;
-    onFirstPhase = true;
-  } else if (onFirstPhase) {
-    // Redundant, oh well
-    onFirstPhase = true;
-    onSecondPhase = false;
-  }
-  countDownTimerWait = 30;
-}
+//  if (onSecondPhase) {
+//    onSecondPhase = false;
+//    onFirstPhase = true;
+//  } else if (onFirstPhase) {
+//    // Redundant, oh well
+//    onFirstPhase = true;
+//    onSecondPhase = false;
+//  }
+//  countDownTimerWait = 30;
+//}
 
 void mousePressed() {
   hasUserStartedGame = true; 
