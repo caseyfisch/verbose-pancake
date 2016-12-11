@@ -96,15 +96,15 @@ void drawArrow(int cx, int cy, int len, float angle){
 int ballX, ballY;
 
 void drawBall() {
-  ballX += (-1 * ax) * 10;
-  ballY += ay * 14;
-  
-  ballX = constrain(ballX, 0, width);
-  ballY = constrain(ballY, 0, height);
+  ballX += (-1 * ax) * 8;
+  ballY += ay * 12;
 
   if (!hasUserStartedGame) {
     ballX = constrain(ballX, width / 2 - width / 8, width / 2 + width / 8);
-    ballY = constrain(ballY, height / 2 - height / 8, height / 2 - height / 8);
+    ballY = constrain(ballY, height / 2 - height / 8, height / 2 + height / 8);
+  } else {
+    ballX = constrain(ballX, 0, width);
+    ballY = constrain(ballY, 0, height);
   }
   
   fill(255);
