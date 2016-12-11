@@ -23,6 +23,7 @@ int countDownTimerWait = 0;
 boolean showX, showCheck;
 int showXCount = 0, showCheckCount = 0;
 
+boolean hasUserStartedGame = false;
 
 private class Target {
   int target = 0;
@@ -61,6 +62,7 @@ void setup() {
   
   textFont(createFont("Arial", 60));
   textAlign(CENTER);
+  rectMode(CENTER);
   
   // Generate targets.
   for (int i=0; i<trialCount; i++) {  //don't change this!
@@ -94,15 +96,22 @@ void drawArrow(int cx, int cy, int len, float angle){
 int ballX, ballY;
 
 void drawBall() {
-  ballX += (-1 * ax) * 8;
-  ballY += ay * 12;
+  ballX += (-1 * ax) * 10;
+  ballY += ay * 14;
   
   ballX = constrain(ballX, 0, width);
   ballY = constrain(ballY, 0, height);
+
+  if (!hasUserStartedGame) {
+    ballX = constrain(ballX, width / 2 - width / 8, width / 2 + width / 8);
+    ballY = constrain(ballY, height / 2 - height / 8, height / 2 - height / 8);
+  }
   
   fill(255);
   noStroke();
   ellipse(ballX, ballY, 50, 50);
+  
+  if (!hasUserStartedGame) return;
   
   int tar = targets.get(trialIndex).target;
   
@@ -251,8 +260,19 @@ void drawActions() {
 
 void draw() {
   background(0);
+  
+  if (!hasUserStartedGame) {
+    textAlign(CENTER);
+    fill(255);
+    text("Touch to start!", width / 2, 60);
+    fill(65);
+    rect(width / 2, height / 2, width / 4, height / 4);
+    drawBall();
+    return;
+  }
     
   if (startTime == 0) {
+    println("Starting...");
     startTime = millis();
   }
   
@@ -456,4 +476,8 @@ void wrongAction(String error) {
     onSecondPhase = false;
   }
   countDownTimerWait = 30;
+}
+
+void mousePressed() {
+  hasUserStartedGame = true; 
 }
