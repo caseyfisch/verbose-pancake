@@ -357,17 +357,23 @@ void draw() {
       
       if (sequence.size() <= 2) {
         if (act == 0) {
+          println("1 swipe good");
           correctSecondPhase = true;
           nextPhase();
         } else {
+          println("1 swipe bad");
           correctSecondPhase = false;
+          nextPhase();
         }
       } else if (sequence.size() >= 3) {
         if (act == 1) {
+          println("2 swipes good");
           correctSecondPhase = true;
           nextPhase();
         } else {
+          println("2 swipes bad");
           correctSecondPhase = false;
+          nextPhase();
         }
       }
       
