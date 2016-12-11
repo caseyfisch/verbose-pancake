@@ -95,7 +95,7 @@ int ballX, ballY;
 
 void drawBall() {
   ballX += (-1 * ax) * 8;
-  ballY += ay * 8;
+  ballY += ay * 12;
   
   ballX = constrain(ballX, 0, width);
   ballY = constrain(ballY, 0, height);
@@ -105,8 +105,6 @@ void drawBall() {
   ellipse(ballX, ballY, 50, 50);
   
   int tar = targets.get(trialIndex).target;
-  
-  println(ballX + ", " + ballY);
   
   if (ballX <= 25) {
     // on Left
@@ -383,72 +381,6 @@ class AccelerometerListener implements SensorEventListener {
     ax = event.values[0];
     ay = event.values[1];
     az = event.values[2];
-    if (trialIndex >= trialCount) return;
-    
-    //if (onFirstPhase && countDownTimerWait < 0 && !userDone) {
-    //  int tar = targets.get(trialIndex).target;
-      
-    //  if (-2 <= ax && ax <= 2 && 0 <= ay && ay <= 4 && az >= 7) {
-    //    // Back...
-    //    println("Back");
-    //    tiltLeft = false;
-    //    tiltRight = false;
-    //    tiltBack = true;
-    //    tiltForward = false;
-        
-    //    if (tar == 0) {
-    //      nextPhase();
-    //    } else {
-    //      wrongAction("Wrong 1st round action");
-    //    }
-          
-    //  } else if (-1 <= ax && ax <= 1 && 8 <= ay && ay <= 9 && az <= 0) { 
-    //    // Forward...
-    //    println("Forward");
-    //    tiltLeft = false;
-    //    tiltRight = false;
-    //    tiltBack = false;
-    //    tiltForward = true;   
-          
-    //    if (tar == 1) {
-    //      nextPhase();
-    //    } else {
-    //      wrongAction("Wrong 1st round action");
-    //    }   
-    //  } else if (-2 <= az && az <= 2 && 3 <= ay && ay <= 8  && ax <= -7) {
-    //    // Right...
-    //    println("Right");
-    //    tiltLeft = false;
-    //    tiltRight = true;
-    //    tiltBack = false;
-    //    tiltForward = false;
-        
-    //    if (tar == 2) {
-    //      nextPhase();
-    //    } else {
-    //      wrongAction("Wrong 1st round action");
-    //    }     
-          
-    //  } else if (-2 <= az && az <= 2 && 3 <= ay && ay <= 8  && ax >= 7) { 
-    //    // left
-    //    println("Left");
-    //    tiltLeft = true;
-    //    tiltRight = false;
-    //    tiltBack = false;
-    //    tiltForward = false;
-          
-    //    if (tar == 3) {
-    //      nextPhase();
-    //    } else {
-    //      wrongAction("Wrong 1st round action");
-    //    }
-    //  } else { // nothing
-    //    tiltLeft = false;
-    //    tiltRight = false;
-    //    tiltBack = false;
-    //    tiltForward = false;
-    //  }
-    //}
   }
   
   public void onAccuracyChanged(Sensor sensor, int accuracy) {
