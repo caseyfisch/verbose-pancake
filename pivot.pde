@@ -440,7 +440,16 @@ class ProximitySensorListener implements SensorEventListener {
       EventInfo i = new EventInfo();
       i.time = event.timestamp;
       i.dist = event.values[0];
-      sequence.add(i);
+      
+      if (sequence.size() == 0) {
+        // want to make sure we start with 0.0 in the sequence
+        if (i.dist == 0) {
+          sequence.add(i); 
+        }
+      } else {
+        // otherwise just add as usual
+        sequence.add(i);
+      }
       
       if (i.dist == 0) {
         num0s += 1; 
@@ -484,6 +493,8 @@ void nextPhase() {
     }
     
     countDownTimerWait = 30;
+    
+    sequence.clear();
 
   }
   
@@ -513,7 +524,7 @@ void mousePressed() {
       ballX = width / 2;
       ballY = height / 2;
       onFirstPhase = true;
-      onSecondPhase = true;
+      onSecondPhase = false;
       trialIndex = 0;
       correctFirstPhase = false;
       correctSecondPhase = false;
@@ -524,6 +535,7 @@ void mousePressed() {
       showCheckCount = 0;
       countDownTimerWait = 0;
       touchCount = 0;
+      sequence.clear();
       
       // Generate targets.
       targets.clear();
